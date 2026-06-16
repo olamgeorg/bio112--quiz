@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 const questions = [
   {
@@ -24,6 +24,27 @@ export default function App() {
   const [selected, setSelected] = useState("")
   const [showResult, setShowResult] = useState(false)
 
+  // PWA install states
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null)
+  const [canInstall, setCanInstall] = useState(false)
+
+  useEffect(() => {
+    const handler = (e: any) => {
+      e.preventDefault()
+      setDeferredPrompt(e)
+      setCanInstall(true)
+    }
+    window.addEventListener('beforeinstallprompt', handler)
+    return () => window.removeEventListener('beforeinstallprompt', handler)
+  }, [])
+
+  const installApp = () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt()
+      deferredPrompt.userChoice.then(() => setCanInstall(false))
+    }
+  }
+
   const handleAnswer = (option: string) => {
     setSelected(option)
     if (option === questions[current].answer) setScore(score + 1)
@@ -39,21 +60,28 @@ export default function App() {
 
   if (showResult) {
     return (
-      <div style={{minHeight:'100vh',display:'flex',flexDirection:'column',justifyContent:'center',alignItems:'center',background:'#f9fafb',padding:'20px',textAlign:'center'}}>
-        <h1 style={{fontSize:'36px',color:'#ec4899',marginBottom:'20px'}}>BIO 112 Quiz 🧬</h1>
+      <div style={{minHeight:'100vh',display:'flex',flexDirection:'column',justifyContent:'center',alignItems:'center',background:'#f9fafb',padding:'20px',textAlign:'center',maxWidth:'600px',margin:'0 auto'}}>
+        <h1 style={{fontSize:'36px',color:'#2563eb',marginBottom:'20px'}}>BIO 112 Quiz 🧬</h1>
         <h2 style={{fontSize:'28px',color:'#333'}}>Your Score: {score}/{questions.length}</h2>
         <p style={{fontSize:'18px',color:'#666',marginTop:'10px'}}>{score === questions.length? 'Perfect! 🎉' : score >= 2? 'Great job! 👏' : 'Keep practicing! 💪'}</p>
         <button onClick={() => {setCurrent(0); setScore(0); setShowResult(false); setSelected("")}}
-          style={{marginTop:'20px',padding:'12px 24px',background:'#ec4899',color:'white',border:'none',borderRadius:'8px',fontSize:'16px',cursor:'pointer'}}>
+          style={{marginTop:'20px',padding:'12px 24px',background:'#2563eb',color:'white',border:'none',borderRadius:'8px',fontSize:'16px',cursor:'pointer',width:'100%'}}>
           Retake Quiz
         </button>
+
+        {canInstall && (
+          <button onClick={installApp}
+            style={{marginTop:'12px',padding:'12px 24px',background:'#10b981',color:'white',border:'none',borderRadius:'8px',fontSize:'16px',cursor:'pointer',width:'100%'}}>
+            📲 Install App
+          </button>
+        )}
       </div>
     )
   }
 
   return (
     <div style={{minHeight:'100vh',background:'#f9fafb',padding:'20px',maxWidth:'600px',margin:'0 auto'}}>
-      <h1 style={{fontSize:'32px',color:'#ec4899',textAlign:'center',marginBottom:'30px'}}>BIO 112 Quiz 🧬</h1>
+      <h1 style={{fontSize:'32px',color:'#2563eb',textAlign:'center',marginBottom:'30px'}}>BIO 112 Quiz 🧬</h1>
       <p style={{textAlign:'center',color:'#666',marginBottom:'20px'}}>Question {current + 1} of {questions.length}</p>
 
       <div style={{background:'white',padding:'30px',borderRadius:'12px',boxShadow:'0 2px 8px rgba(0,0,0,0.1)'}}>
@@ -71,6 +99,13 @@ export default function App() {
           </button>
         ))}
       </div>
+
+      {canInstall && (
+        <button onClick={installApp}
+          style={{marginTop:'20px',padding:'12px 24px',background:'#10b981',color:'white',border:'none',borderRadius:'8px',fontSize:'16px',cursor:'pointer',width:'100%'}}>
+          📲 Install App
+        </button>
+      )}
     </div>
   )
 }
