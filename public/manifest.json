@@ -1,7 +1,7 @@
 {
   "name": "Bio 112 Quiz",
   "short_name": "Bio 112",
-  "description": "UNIBEN BIO 112 Practice Questions",
+  "description": "leadCityUniversity BIO 112 Practice Questions",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
