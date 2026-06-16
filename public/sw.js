@@ -1,15 +1,10 @@
-const CACHE = "bio-112-v1"
+const CACHE_NAME = 'bio112-v1'
+const urlsToCache = ['/']
 
-self.addEventListener("install", (e) => {
-  e.waitUntil(
-    caches.open(CACHE).then((cache) =>
-      cache.addAll(["/", "/index.html", "/icon-512.jpg"])
-    )
-  )
+self.addEventListener('install', (e) => {
+  e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache)))
 })
 
-self.addEventListener("fetch", (e) => {
-  e.respondWith(
-    caches.match(e.request).then((res) => res || fetch(e.request))
-  )
+self.addEventListener('fetch', (e) => {
+  e.respondWith(caches.match(e.request).then(res => res || fetch(e.request)))
 })
