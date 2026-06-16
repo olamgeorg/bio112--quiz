@@ -1,23 +1,29 @@
-import { useEffect, useState } from "react"
+import { useState, useEffect } from 'react'
+
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => Promise<void>
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>
+}
 
 export default function PWAInstallPrompt() {
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null)
+  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null)
   const [show, setShow] = useState(false)
 
   useEffect(() => {
-    const handler = (e: any) => {
+    const handler = (e: Event) => {
       e.preventDefault()
-      setDeferredPrompt(e)
+      setDeferredPrompt(e as BeforeInstallPromptEvent)
       setShow(true)
     }
-    window.addEventListener("beforeinstallprompt", handler)
-    return () => window.removeEventListener("beforeinstallprompt", handler)
+    window.addEventListener('beforeinstallprompt', handler)
+    return () => window.removeEventListener('beforeinstallprompt', handler)
   }, [])
 
-  const install = async () => {
+  const handleInstall = async () => {
     if (!deferredPrompt) return
     deferredPrompt.prompt()
     await deferredPrompt.userChoice
+    setDeferredPrompt(null)
     setShow(false)
   }
 
@@ -25,29 +31,26 @@ export default function PWAInstallPrompt() {
 
   return (
     <div style={{
-      position: "fixed",
+      position: 'fixed',
       bottom: 20,
       left: 20,
       right: 20,
-      background: "#2563eb",
-      color: "white",
-      padding: "16px",
-      borderRadius: "12px",
-      textAlign: "center",
+      background: '#ec4899',
+      color: 'white',
+      padding: '12px 16px',
+      borderRadius: 12,
       zIndex: 9999
     }}>
-      <p style={{margin: "0 0 10px 0", fontWeight: "bold"}}>Install Bio 112 Quiz App?</p>
-      <button onClick={install} style={{
-        background: "white",
-        color: "#2563eb",
-        border: "none",
-        padding: "10px 20px",
-        borderRadius: "8px",
-        fontWeight: "bold",
-        cursor: "pointer"
-      }}>
-        Install Now
-      </button>
+      <p style={{ margin: 0, fontSize: 14 }}>Install Bio112 Quiz for faster access?</p>
+      <button onClick={handleInstall} style={{
+        marginTop: 8,
+        background: 'white',
+        color: '#ec4899',
+        border: 'none',
+        padding: '6px 12px',
+        borderRadius: 8,
+        fontWeight: 'bold'
+      }}>Install</button>
     </div>
   )
 }
