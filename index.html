@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bio 112 Quiz</title>
+
+    <!-- Theme behavior and manifest link -->
+    <meta name="theme-color" content="#2563eb" />
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- iOS immersive setup -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Bio 112 Quiz" />
+    <link rel="apple-touch-icon" href="/icon-512.jpg" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+
+    <!-- Load worker -->
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker.register("/sw.js")
+           .then((reg) => console.log("[PWA] Service Worker registered:", reg.scope))
+           .catch((err) => console.error("[PWA] Service Worker failed:", err));
+        });
+      }
+    </script>
+  </body>
+</html>
